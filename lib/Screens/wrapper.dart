@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 
+// ignore: camel_case_types
 class wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

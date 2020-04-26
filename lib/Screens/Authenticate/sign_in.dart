@@ -41,7 +41,7 @@ String error='';
         backgroundColor: Colors.brown[400],
         elevation: 0.0,
         title: Text('Sign In '),
-         
+
         centerTitle: true,
        actions: <Widget>[
          FlatButton.icon(onPressed: (){
@@ -66,11 +66,11 @@ String error='';
                   decoration: textInputDecoration.copyWith(hintText:'Email'),
                   validator: (val)=> val.isEmpty ? 'Enter your email' :null,
                   onChanged: (val){
-                   
-                   setState(() => email=val);  
-                    
+
+                   setState(() => email=val);
+
                   }),
-                  
+
                   SizedBox(height: 20 ),
                 TextFormField(
                   decoration: textInputDecoration.copyWith(hintText:'Password'),
@@ -78,16 +78,17 @@ String error='';
                   obscureText: true,
                   onChanged: (val){
 
-                 setState (() => password=val);  
-                    
+                 setState (() => password=val);
+
                   },
 
                 ),
                 SizedBox(height:20 ),
                 RaisedButton(
                   color: Colors.pink ,
+                 // ignore: missing_return
                  onPressed: () async {
-                   
+
                     if (_formkey.currentState.validate()) {
                       setState(() {
                         loading=true;
@@ -99,15 +100,15 @@ String error='';
                         loading=false;
                         }
                         );
-                      
+
                       } else return Home();
                     }
                   } ,
                   textColor: Colors.white,
                   child: Text('Sign In',style: TextStyle(color: Colors.white),),
                 ),
-                
-               
+
+
 
               ],
             ) ,),
