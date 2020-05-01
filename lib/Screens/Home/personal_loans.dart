@@ -1,17 +1,49 @@
 import 'package:brewcrew/Screens/Home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:brewcrew/Screens/Home/T&Cs.dart';
+import 'package:facebook_audience_network/facebook_audience_network.dart';
 
 ///////////////////////////////////////////////////////////////duration
 
 // ignore: camel_case_types
-class personal_Loan extends StatefulWidget {
+class Perdur extends StatefulWidget {
   @override
-  _PersonalLState createState() => _PersonalLState();
+  _PerdurState createState() => _PerdurState();
 }
 
-class _PersonalLState extends State<personal_Loan> {
+class _PerdurState extends State<Perdur> {
+
   double sliderval= 6.0;
+  bool isInterstitialAdLoaded = false;
+ @override
+  void initState() {
+    super.initState();
+
+    FacebookAudienceNetwork.init(
+      testingId: "35e92a63-8102-46a4-b0f5-4fd269e6a13c",
+    );
+
+    loadInterstitialAd();
+  }
+
+  void loadInterstitialAd() {
+    FacebookInterstitialAd.loadInterstitialAd(
+      placementId: "228772211741348_228772388407997",
+      listener: (result, value) {
+        print("Interstitial Ad: $result --> $value");
+        if (result == InterstitialAdResult.LOADED)
+          isInterstitialAdLoaded = true;
+
+        /// Once an Interstitial Ad has been dismissed and becomes invalidated,
+        /// load a fresh Ad by calling this function.
+        if (result == InterstitialAdResult.DISMISSED &&
+            value["invalidated"] == true) {
+          isInterstitialAdLoaded = false;
+          loadInterstitialAd();
+        }
+      },
+    );
+  }
 
 
   @override
@@ -31,7 +63,7 @@ class _PersonalLState extends State<personal_Loan> {
             fontSize: 28,
           ),
         ),
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Colors.brown[800],
         elevation: 0.0,
 
         centerTitle: true,
@@ -49,17 +81,17 @@ class _PersonalLState extends State<personal_Loan> {
             height: 100,
             width: 800,
             decoration: BoxDecoration(
-              color: Colors.orangeAccent,
+              color: Colors.brown[800],
               borderRadius: BorderRadius.only(
                 bottomRight: Radius.circular(35),
                 bottomLeft: Radius.circular(35),
               ),
             ),
-            child: Center(child: Text('Personal L',style: TextStyle(fontSize: 25,color:Colors.white,fontWeight: FontWeight.bold),)),
+            child: Center(child: Text('Duration',style: TextStyle(fontSize: 25,color:Colors.white,fontWeight: FontWeight.bold),)),
           ),////title
 ///////////////////////////////////////////Picture with Padding
           Padding(
-          padding: const EdgeInsets.fromLTRB(32, 120, 0, 0),
+          padding: const EdgeInsets.fromLTRB(20, 120, 0, 0),
            child: Container(
 
             width: 350,
@@ -87,7 +119,7 @@ class _PersonalLState extends State<personal_Loan> {
                 width: 380,
                 height: 300,
                 image: AssetImage(
-                  'assets/amount.jpg',
+                  'assets/bank.jpg',
                 ),
                 fit: BoxFit.fill,
               ),
@@ -112,7 +144,7 @@ class _PersonalLState extends State<personal_Loan> {
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.white70,
               ),
-              child: Center(child: Text('Repayment Period',style: TextStyle(fontWeight:FontWeight.bold,),)),
+              child: Center(child: Text('Slide to select below',style: TextStyle(fontWeight:FontWeight.bold,),)),
             ),
           ), //////Repayment
           Padding(
@@ -146,13 +178,15 @@ class _PersonalLState extends State<personal_Loan> {
             ),
           ),///slider
 
-          Padding( padding: const EdgeInsets.fromLTRB(155, 680, 15, 0),
+          Padding( padding: const EdgeInsets.fromLTRB(155, 660, 15, 0),
             child:RaisedButton(
+
               onPressed: () {
+                showInterstitialAd();
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) => tandc()));
+                        builder: (BuildContext context) => Tandc()));
               },
               color: Colors.orange,
               child: Text(
@@ -169,5 +203,12 @@ class _PersonalLState extends State<personal_Loan> {
           ),
       ),
     );
+  }
+  
+  showInterstitialAd() {//  function
+    if (isInterstitialAdLoaded == true) {
+      FacebookInterstitialAd.showInterstitialAd();
+    } else
+      print('Ad no loaded');
   }
 }

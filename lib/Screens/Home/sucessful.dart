@@ -1,18 +1,52 @@
 
 import 'package:brewcrew/Screens/Home/PerTerms.dart';
-import 'package:brewcrew/Screens/Home/T&Cs.dart';
 import 'package:brewcrew/Screens/Home/home.dart';
 
 
 
+import 'package:facebook_audience_network/facebook_audience_network.dart';
+
 import 'package:flutter/material.dart';
 //////////////////////////////////////////terms and conditions
-class sucess extends StatefulWidget {
+class Sucess extends StatefulWidget {
   @override
-  _sucess createState() => _sucess();
+  _Sucess createState() => _Sucess();
 }
 
-class _sucess extends State<sucess> {
+class _Sucess extends State<Sucess> {
+  bool isInterstitialAdLoaded = false;
+  
+  @override
+  
+  
+  void initState() {
+    super.initState();
+
+    FacebookAudienceNetwork.init(
+      testingId: "35e92a63-8102-46a4-b0f5-4fd269e6a13c",
+    );
+
+    loadInterstitialAd();
+  }
+
+  void loadInterstitialAd() {
+    FacebookInterstitialAd.loadInterstitialAd(
+      placementId: "228772211741348_228772388407997",
+      listener: (result, value) {
+        print("Interstitial Ad: $result --> $value");
+        if (result == InterstitialAdResult.LOADED)
+          isInterstitialAdLoaded = true;
+
+        /// Once an Interstitial Ad has been dismissed and becomes invalidated,
+        /// load a fresh Ad by calling this function.
+        if (result == InterstitialAdResult.DISMISSED &&
+            value["invalidated"] == true) {
+          isInterstitialAdLoaded = false;
+          loadInterstitialAd();
+        }
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,7 +138,7 @@ class _sucess extends State<sucess> {
             child: RaisedButton(
               elevation: 20,
               colorBrightness: Brightness.dark,
-              onPressed: () {
+              onPressed: () { showInterstitialAd() ;
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -125,6 +159,14 @@ class _sucess extends State<sucess> {
         ),
       ),
     );
-  }
+    
+ }
+ 
+  showInterstitialAd() {//  function
+    if (isInterstitialAdLoaded == true) {
+      FacebookInterstitialAd.showInterstitialAd();
+    } else
+      print('Ad no loaded');
+   }
 
 }

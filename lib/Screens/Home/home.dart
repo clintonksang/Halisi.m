@@ -1,28 +1,57 @@
-
+import 'package:brewcrew/Screens/Home/bduration.dart';
+import 'package:brewcrew/Screens/Home/personal_loans.dart';
 import 'package:brewcrew/Screens/Services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:brewcrew/Shared/facebookads.dart';
+import 'package:facebook_audience_network/facebook_audience_network.dart';
 
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
 
+class _HomeState extends State<Home> {
+  bool isInterstitialAdLoaded = false;
 
-class Home extends StatelessWidget {
+  @override
+  void initState() {
+    super.initState();
 
- final showAd = AdsPageState();
- void fn(){
-   showAd.showInterstitialAd();
- }
- 
+    FacebookAudienceNetwork.init(
+      testingId: "35e92a63-8102-46a4-b0f5-4fd269e6a13c",
+    );
+
+    loadInterstitialAd();
+  }
+
+  void loadInterstitialAd() {
+    FacebookInterstitialAd.loadInterstitialAd(
+      placementId: "228772211741348_228772388407997",
+      listener: (result, value) {
+        print("Interstitial Ad: $result --> $value");
+        if (result == InterstitialAdResult.LOADED)
+          isInterstitialAdLoaded = true;
+
+        /// Once an Interstitial Ad has been dismissed and becomes invalidated,
+        /// load a fresh Ad by calling this function.
+        if (result == InterstitialAdResult.DISMISSED &&
+            value["invalidated"] == true) {
+          isInterstitialAdLoaded = false;
+          loadInterstitialAd();
+        }
+      },
+    );
+  }
 
   final AuthService _auth = AuthService();
-  @override
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.menu),
+          icon: Icon(Icons.menu, color: Colors.brown[800],),
           onPressed: () {},
         ),
         title: Text(
@@ -33,44 +62,34 @@ class Home extends StatelessWidget {
         ),
         backgroundColor: Colors.brown[800],
         elevation: 0.0,
-        actions: <Widget>[
-          FlatButton.icon(
-            onPressed: () async {
-              await _auth.signOut();
-            },
-            icon: Icon(Icons.person),
-            label: Text('Logout'),
-          )
-        ],
+
         centerTitle: true,
       ),
       ////////////////////////////////////////////////////////////////////////////////////body
       body: Stack(
         children: <Widget>[
-          Container(
+          Container(//DOG.JPG
+            
             child: Image(
               image: AssetImage('assets/dog.jpg'),
               fit: BoxFit.cover,
             ),
-
           ),
           /////////////////////////////////////////////////////////////////////////////////////////////////////////////////hereimage
           Container(
             height: 50,
-
             decoration: BoxDecoration(
-
               color: Colors.brown[800],
               borderRadius: BorderRadius.only(
                 bottomRight: Radius.circular(35),
                 bottomLeft: Radius.circular(35),
               ),
-
             ),
           ),
 
           ////////////////////////////////////////////////////opacity
           Container(
+            //BLOANS AND Our Services
             child: Padding(
               padding: EdgeInsets.all(20),
               child: Column(
@@ -83,19 +102,19 @@ class Home extends StatelessWidget {
                       children: <Widget>[
                         bloans(context),
                         ourServices(context),
-                    /////////////////////////////////////////////////////////////container scroll
-
+                        /////////////////////////////////////////////////////////////container scroll
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-          ),//////////////////////////////container scrolls
+          ), //////////////////////////////container scrolls
 
           ///////////////////////////////////////////////////////opacity
 
           Container(
+            //simple efficient fast
             margin: EdgeInsets.all(10),
             height: 300,
             color: Colors.transparent, //////////////////////red
@@ -117,17 +136,16 @@ class Home extends StatelessWidget {
                             color: Colors.black12),
                       ],
                       borderRadius: BorderRadius.circular(30),
-                      color: Colors.white70,
-
+                      color: Colors.black45,
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(50, 105, 0, 0),
+                      padding: const EdgeInsets.fromLTRB(10, 105, 0, 0),
                       child: Text(
                         'Simple . Fast . Efficient',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.brown[800],
+                          color: Colors.orangeAccent,
                         ),
                       ),
                     ),
@@ -135,7 +153,7 @@ class Home extends StatelessWidget {
                 ),
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //HERE IMAGE
-                Center(
+                Center(  ///amount.jpg
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 95),
                     child: Container(
@@ -175,11 +193,12 @@ class Home extends StatelessWidget {
           ),
 
           Padding(
-            padding: const EdgeInsets.fromLTRB(15, 322, 0, 0),
+            // who we are
+            padding: const EdgeInsets.fromLTRB(15, 311, 0, 0),
             child: Text(
               'Who we are',
               style: TextStyle(
-                fontSize: 25,
+                fontSize: 20,
                 color: Colors.orangeAccent,
                 fontWeight: FontWeight.bold,
               ),
@@ -190,11 +209,12 @@ class Home extends StatelessWidget {
             height: 40,
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(15, 370, 0, 0),
+            //at Halisi,we..
+            padding: const EdgeInsets.fromLTRB(15, 338, 0, 0),
             child: Text(
               'At Halisi, we ofer easily accesible loans with long repayment periods. With one tap of a button, our customers can get efficient financing. \nKindly check through our services below to proceed.',
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 12.5,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -203,25 +223,29 @@ class Home extends StatelessWidget {
 
           /////////////////////////////////////////////////////////////////////////////////////
         ],
-
-        
       ),
-      
-
     );
-  }
+   }
 
- ////////////////////////////////////////////////////////Bloans below
-  Widget bloans(context) {
+   showInterstitialAd() {//  function
+    if (isInterstitialAdLoaded == true) {
+      FacebookInterstitialAd.showInterstitialAd();
+    } else
+      print('Ad no loaded');
+   }
+
+    ////////////////////////////////////////////////////////Bloans below
+     Widget bloans(context) {
     return AspectRatio(
       aspectRatio: 1.7 / 2,
       child: InkWell(
-        onTap: () 
-          
-         =>fn()
-          
-        ,
+        onTap: (){
+          showInterstitialAd();Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: ( context) => Perdur())); },
         child: Container(
+          height: 20,
           margin: EdgeInsets.only(right: 20),
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -260,59 +284,56 @@ class Home extends StatelessWidget {
         ),
       ),
     );
-  }
-  
+   }
 
- ////////////////////////////////////////////////////////Ploans Below
+     ////////////////////////////////////////////////////////Ploans Below
 
- Widget ourServices(context) {
-  return AspectRatio(
-    aspectRatio: 1.7 / 2,
-    child: GestureDetector(
-      onTap: () 
-
-      =>fn()
-        
-      ,
-      child: Container(
-        margin: EdgeInsets.only(right: 20),
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white70,
-        ),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Colors.grey[200],
-                    ),
-                    child: Icon(Icons.featured_play_list),
-                  )
-                ],
-              ),
-              SizedBox(height: 30),
-              Text('Business Loans',
-                  style: TextStyle(
-                    color: Colors.brown[800],
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  )),
-              SizedBox(height: 10),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Icon(Icons.done_all, color: Colors.greenAccent),
-              ),
-            ]
+   Widget ourServices(context) {
+    return AspectRatio(
+      aspectRatio: 1.7 / 2,
+      child: GestureDetector(
+        onTap:  (){
+          showInterstitialAd();Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: ( context) => Bduration())); },child: Container(
+          margin: EdgeInsets.only(right: 20),
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.white70,
+          ),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 8.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Colors.grey[200],
+                      ),
+                      child: Icon(Icons.featured_play_list),
+                    )
+                  ],
+                ),
+                SizedBox(height: 30),
+                Text('Business Loans',
+                    style: TextStyle(
+                      color: Colors.brown[800],
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    )),
+                SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Icon(Icons.done_all, color: Colors.greenAccent),
+                ),
+              ]),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
-}
-

@@ -1,26 +1,60 @@
 
 import 'package:brewcrew/Screens/Home/PerTerms.dart';
 import 'package:brewcrew/Screens/Home/personal_loans.dart';
-
+import 'package:facebook_audience_network/facebook_audience_network.dart';
 import 'package:flutter/material.dart';
+
+
 //////////////////////////////////////////////////////////////AmountPage
-class bamount extends StatefulWidget {
+class Bamount extends StatefulWidget {
   @override
-  _bamount createState() => _bamount();
+  _Bamount createState() => _Bamount();
 }
 
-class _bamount extends State<bamount> {
+class _Bamount extends State<Bamount> {
+  bool isInterstitialAdLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    FacebookAudienceNetwork.init(
+      testingId: "35e92a63-8102-46a4-b0f5-4fd269e6a13c",
+    );
+
+    loadInterstitialAd();
+  }
+
+  void loadInterstitialAd() {
+    FacebookInterstitialAd.loadInterstitialAd(
+      placementId: "228772211741348_228772388407997",
+      listener: (result, value) {
+        print("Interstitial Ad: $result --> $value");
+        if (result == InterstitialAdResult.LOADED)
+          isInterstitialAdLoaded = true;
+
+        /// Once an Interstitial Ad has been dismissed and becomes invalidated,
+        /// load a fresh Ad by calling this function.
+        if (result == InterstitialAdResult.DISMISSED &&
+            value["invalidated"] == true) {
+          isInterstitialAdLoaded = false;
+          loadInterstitialAd();
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.push(
+          onPressed: () { showInterstitialAd();
+;            Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) => personal_Loan()));
+                    builder: (BuildContext context) => Perdur()));
           },
         ),
         title: Text(
@@ -29,7 +63,7 @@ class _bamount extends State<bamount> {
             fontSize: 28,
           ),
         ),
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Colors.brown[800],
         elevation: 0.0,
 
         centerTitle: true,
@@ -47,13 +81,13 @@ class _bamount extends State<bamount> {
             height: 100,
             width: 800,
             decoration: BoxDecoration(
-              color: Colors.orangeAccent,
+              color: Colors.brown[800],
               borderRadius: BorderRadius.only(
                 bottomRight: Radius.circular(35),
                 bottomLeft: Radius.circular(35),
               ),
             ),
-            child: Center(child: Text('Personal L', style: TextStyle(
+            child: Center(child: Text('Amount', style: TextStyle(
                 fontSize: 25,
                 color: Colors.white,
                 fontWeight: FontWeight.bold),)),
@@ -61,7 +95,7 @@ class _bamount extends State<bamount> {
           ////title
 ///////////////////////////////////////////Picture with Padding
           Padding(
-            padding: const EdgeInsets.fromLTRB(32, 120, 0, 0),
+            padding: const EdgeInsets.fromLTRB(20, 120, 0, 0),
             child: Container(
 
               width: 350,
@@ -89,7 +123,7 @@ class _bamount extends State<bamount> {
                   width: 380,
                   height: 300,
                   image: AssetImage(
-                    'assets/amount.jpg',
+                    'assets/coin.jpg',
                   ),
                   fit: BoxFit.fill,
                 ),
@@ -142,12 +176,13 @@ class _bamount extends State<bamount> {
           Padding(padding: const EdgeInsets.fromLTRB(155, 680, 15, 0),
             child: RaisedButton(
               onPressed: () {
+                showInterstitialAd();
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => PerTerms()));
               },
-              color: Colors.orange,
+              color: Colors.orangeAccent,
               child: Text(
                 'OK',
                 style: TextStyle(color: Colors.white),
@@ -162,6 +197,13 @@ class _bamount extends State<bamount> {
         ),
       ),
     );
+  }
+  
+  showInterstitialAd() {//  function
+    if (isInterstitialAdLoaded == true) {
+      FacebookInterstitialAd.showInterstitialAd();
+    } else
+      print('Ad no loaded');
   }
 
 }
